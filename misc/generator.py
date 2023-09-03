@@ -1,30 +1,34 @@
 from xml.sax.saxutils import escape
 from misc import config
+from misc.utils import Paper
 
 
-def escape_xml(text):
+def escape_xml(text: str) -> str:
+    """Escape special characters in the text in order to support the xml format."""
     return escape(
         text,
         entities={"'": "&apos;", "\"": "&quot;"}
     )
 
 
-def gen_entry(page):
+def gen_entry(paper: Paper) -> str:
+    """Convert a paper into a xml style paper entry."""
     authors_entry = ""
-    for author in page.authors:
-        authors_entry += f"<author><name> {author} </name></author>"
+    for author in paper.authors:
+        authors_entry += f"<author><name>{author}</name></author>"
 
     return f'<entry> ' \
-           f'<id> {page.link} </id>' \
-           f'<title> {escape_xml(page.title)} </title> ' \
-           f'<summary>{escape_xml(page.abstract)} </summary> ' \
+           f'<id>{paper.link}</id>' \
+           f'<title>{escape_xml(paper.title)}</title> ' \
+           f'<summary>{escape_xml(paper.abstract)} </summary> ' \
            f'{authors_entry} ' \
-           f'<link href="{page.link}" rel="alternate" type="text/html"/>  ' \
-           f'<link title="pdf" href="{page.link}" rel="related" type="application/pdf"/>' \
+           f'<link href="{paper.link}" rel="alternate" type="text/html"/>  ' \
+           f'<link title="pdf" href="{paper.link}" rel="related" type="application/pdf"/>' \
            f'</entry>'
 
 
-def gen_atom_feed(papers):
+def gen_atom_feed(papers: list[Paper]) -> str:
+    """Generate the atom feed based on the paper list."""
     entries = []
     for paper in papers:
         entries.append(gen_entry(paper))
@@ -37,14 +41,15 @@ def gen_atom_feed(papers):
            f'</feeds>'
 
 
-def create_atom_feed(papers, conference=None, year=None):
+def create_atom_feed(papers: list[Paper], conference=None, year=None) -> None:
+    """Create an atom feed file (xml format) and store it."""
     print("Generate and save atom feeds.")
     atom_feed = gen_atom_feed(papers)
 
     if conference and year:
         file_name = f"{conference}_{year}"
     else:
-        file_name = "feeds"
+        file_name = "feed"
 
     with open(f"{config.result_feed_folder}/{file_name}.xml", "w", encoding="utf-8") as f:
         f.write(atom_feed)

@@ -1,12 +1,14 @@
 import json
 import requests
+from misc import config
 
 
-def get_data(pii: str, api_key: str):
+def get_data(pii: str, api_key: str) -> tuple[str, list[str], str]:
+    """Get paper information from elsevier based on the provided link."""
     path = f"https://api.elsevier.com/content/article/pii/{pii}?apiKey={api_key}"
-    headers = {'Accept': 'application/json'}
+    headers = {"Accept": "application/json"}
 
-    content = requests.get(path, headers=headers).content
+    content = requests.get(path, headers=headers, proxies=config.proxies).content
     content = json.loads(content)
     data = content["full-text-retrieval-response"]["coredata"]
 

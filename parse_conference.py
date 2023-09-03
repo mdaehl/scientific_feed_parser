@@ -4,6 +4,7 @@ from parsers.conferences import icml, cvf, nips, ecva
 
 
 def main(args: argparse.Namespace) -> None:
+    """Main method to execute conference feeding."""
     conference = args.conference
     year = args.year
 
@@ -24,7 +25,8 @@ def main(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--conference", "-c", help="Supported conferences are: 'CVPR', 'ICCV', 'ECCV' and 'ICML'.")
+    arg_parser.add_argument("--conference", "-c", help="Supported conferences are: 'CVPR', 'WACV', 'ICCV', 'ECCV' and "
+                                                       "'ICML'.")
     arg_parser.add_argument("--year", "-y", type=int, help="Year of the conference.")
     input_args = arg_parser.parse_args()
     main(input_args)

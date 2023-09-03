@@ -2,8 +2,9 @@ from misc import utils
 
 
 class Parser:
-    def __init__(self, conference, year):
+    def __init__(self, conference: str, year: int):
         self.conference = conference
+        utils.check_year(year)
         self.year = year
         self.links = None
         self.base_url = utils.base_urls[self.conference]

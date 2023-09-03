@@ -1,11 +1,10 @@
 import requests
 import json
-import unicodedata
+from misc import config
 
 
-def get_data(url: str, main_domain: str, api_key: str):
-
-
+def get_data(url: str, main_domain: str, api_key: str) -> tuple[str, list[str], str]:
+    """Get paper information from springer (nature) based on the provided link."""
     if main_domain == "nature.com":
         nature_doi_preface = "10.1038"
         doi = url.split("/")[-1]
@@ -14,7 +13,7 @@ def get_data(url: str, main_domain: str, api_key: str):
         doi = "/".join(url.split("/")[-2:])
         url = f"https://api.springernature.com/metadata/json/doi/{doi}?api_key={api_key}"
 
-    content = requests.get(url).content
+    content = requests.get(url, proxies=config.proxies).content
     content = json.loads(content)
 
     title = content["records"][0]["title"]

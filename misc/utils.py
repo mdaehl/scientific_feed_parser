@@ -4,6 +4,7 @@ import collections
 import aiohttp
 import requests
 from tqdm.asyncio import tqdm_asyncio
+from datetime import datetime
 
 
 # paper base class
@@ -19,7 +20,14 @@ base_urls = {
 }
 
 
+def check_year(year: int) -> None:
+    """Guarantee that years that are in the future are not allowed."""
+    if year > datetime.now().year:
+        raise ValueError("The selected year lies in the future and is therefore invalid.")
+
+
 def get_link(item: bs4.element.Tag) -> str:
+    """Get the link of a bs4 element tag."""
     return item.find("a")["href"]
 
 
@@ -29,27 +37,27 @@ async def fetch_url(session: aiohttp.client.ClientSession, url: str) -> str:
         return await response.text()
 
 
-def get_content(url: str) -> str:
-    return requests.get(url, proxies=config.proxies).content.decode("utf-8")
-
-
-async def get_paper_html_content(links: list) -> list:
+async def get_paper_html_content(links: list[str]) -> list[str]:
+    """Get the html content of all links."""
     print("Retrieving paper data.")
 
-    import asyncio
-    semaphore = asyncio.Semaphore(20)
-    import socket
-    connector = aiohttp.TCPConnector(limit=10, verify_ssl=False, family=socket.AF_INET,)
-
-    async with semaphore:
-        async with aiohttp.ClientSession(connector=connector) as session:
-            tasks = [fetch_url(session, url) for url in links]
-            await asyncio.sleep(0.01)
-            html_contents = await tqdm_asyncio.gather(*tasks)
-            return html_contents
+    # usually this works, but in case the requests fail, check https://stackoverflow.com/questions/51248714/aiohttp-client-exception-serverdisconnectederror-is-this-the-api-servers-issu
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_url(session, url) for url in links]
+        html_contents = await tqdm_asyncio.gather(*tasks)
+        return html_contents
 
 
 def get_soup(url: str) -> bs4.BeautifulSoup:
-    content = requests.get(url).content.decode("utf-8")
+    """Compact class to retrieve url and pass it into bs4."""
+    content = requests.get(url, proxies=config.proxies).content.decode("utf-8")
     soup = bs4.BeautifulSoup(content, parser="html.parser", features="lxml")
     return soup
+
+
+def decode_xml_soup(soup: bs4.BeautifulSoup) -> tuple[list[str], list[list[str]], list[str], list[str]]:
+    titles = list(map(lambda x: x.text, soup.select("entry >title")))
+    all_authors = list(map(lambda x: list(map(lambda y: y.text, x.select("author"))), soup.select("entry")))
+    abstracts = list(map(lambda x: x.text, soup.select("entry >summary")))
+    links = list(map(lambda x: x.text, soup.select("entry >id")))
+    return titles, all_authors, abstracts, links
