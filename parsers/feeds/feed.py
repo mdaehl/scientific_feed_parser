@@ -1,6 +1,9 @@
 import bs4
 import re
 from urllib.parse import urlparse
+
+import requests
+
 from misc.utils import Paper
 from parsers.feeds.api import arxiv, springer, elsevier
 import yaml
@@ -10,9 +13,10 @@ import os
 
 
 class FeedParser:
-    def __init__(self, file_path: str, filename: str, append: bool):
+    def __init__(self, file_path: str, filename: str, online: bool, append: bool):
         self.file_path = file_path
         self.append = append
+        self.online = online
         self.existing_papers = {}
         self.feed_file_path = f"{config.result_feed_folder}/{filename}.xml"
 
@@ -27,9 +31,15 @@ class FeedParser:
 
     def load_content(self) -> bs4.BeautifulSoup:
         """Load the existing xml file of Google Scholar alert."""
-        with open(self.file_path, "r", encoding="utf-8") as file:
-            content = file.read()
-        return bs4.BeautifulSoup(content, featues="xml")
+        if self.online:
+            try:
+                content = requests.get(self.file_path).content.decode("utf-8")
+            except requests.exceptions.InvalidSchema:
+                raise ValueError(f"{self.file_path} is no valid URL.")
+        else:
+            with open(self.file_path, "r", encoding="utf-8") as file:
+                content = file.read()
+        return bs4.BeautifulSoup(content, features="xml")
 
     def load_existing_items(self) -> None:
         """Load the existing entries of the provided atom feed file."""
