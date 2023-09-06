@@ -50,7 +50,7 @@ class NIPSParser(base.Parser):
 
                 title = soup.find("title").text
                 authors = soup.select("p >i")[0].text.split(",")
-                abstract = soup.select("p >p")[0].text
+                abstract = soup.find("h4", text="Abstract").find_next_sibling("p").text
                 link = soup.find("meta", attrs={"name": "citation_pdf_url"})["content"]
 
                 # build and append paper
