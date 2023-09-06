@@ -41,8 +41,7 @@ class NIPSParser(base.Parser):
         html_contents = []
         for link in tqdm(self.links):
             content = requests.get(link, proxies=config.proxies).content.decode("utf-8")
-            soup = bs4.BeautifulSoup(content, parser="html.parser", features="lxml")
-            html_contents.append(soup)
+            html_contents.append(content)
 
         print("Processing paper data.")
         for content, html_link in zip(html_contents, self.links):
