@@ -1,2 +1,11 @@
 elsevier_api_key:
 springer_api_key:
+pairings:
+  - source: "https://gs_feed.xml"
+    target: "feed.xml"
+    online: True
+    append: True
+  - source: "gs_feed.xml"
+    target: "parsed_gs_feed.xml"
+    online: False
+    append: True
