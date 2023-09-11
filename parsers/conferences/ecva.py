@@ -34,7 +34,7 @@ class ECVAParser(base.Parser):
 
         self.links = links
         if len(self.links) == 0:
-            raise ValueError(f"No papers found at the ICCV in {self.year}")
+            raise ValueError(f"No papers found at the ECCV in {self.year}")
 
     def parse_papers(self) -> None:
         """Parse all papers by retrieving the html content and process it to get the relevant information."""
