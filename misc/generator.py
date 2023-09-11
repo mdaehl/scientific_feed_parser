@@ -36,9 +36,9 @@ def gen_atom_feed(papers: list[Paper]) -> str:
     entries = "\n".join(entries)
 
     return f'<?xml version="1.0" encoding="UTF-8"?> ' \
-           f'<feeds xmlns="http://www.w3.org/2005/Atom"> ' \
+           f'<feed xmlns="http://www.w3.org/2005/Atom"> ' \
            f'{entries} ' \
-           f'</feeds>'
+           f'</feed>'
 
 
 def create_atom_feed(papers: list[Paper], conference=None, year=None) -> None:
