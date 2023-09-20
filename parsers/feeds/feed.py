@@ -33,7 +33,7 @@ class FeedParser:
         """Load the existing xml file of Google Scholar alert."""
         if self.online:
             try:
-                content = requests.get(self.file_path).content.decode("utf-8")
+                content = requests.get(self.file_path, proxies=config.proxies).content.decode("utf-8")
             except requests.exceptions.InvalidSchema:
                 raise ValueError(f"{self.file_path} is no valid URL.")
         else:
