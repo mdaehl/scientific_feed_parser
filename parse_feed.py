@@ -12,7 +12,7 @@ def parse_feed(file_path: str, result_file_name: str, append: bool, online: bool
     else:
         feed_parser = feed.FeedParser(file_path, result_file_name, online, append)
         papers = feed_parser.get_papers()
-        generator.create_atom_feed(papers)
+        generator.create_atom_feed(papers, result_file_name=result_file_name)
 
 
 def main(args: argparse.Namespace) -> None:

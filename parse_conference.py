@@ -20,7 +20,7 @@ def main(args: argparse.Namespace) -> None:
         raise ValueError(f"Conference '{conference}' is not or not yet supported.")
 
     papers = paper_parser.get_papers()
-    generator.create_atom_feed(papers, conference, year)
+    generator.create_atom_feed(papers, conference=conference, year=year)
 
 
 if __name__ == "__main__":

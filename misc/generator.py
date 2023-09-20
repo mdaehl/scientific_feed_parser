@@ -41,16 +41,18 @@ def gen_atom_feed(papers: list[Paper]) -> str:
            f'</feed>'
 
 
-def create_atom_feed(papers: list[Paper], conference=None, year=None) -> None:
+def create_atom_feed(papers: list[Paper], result_file_name=None, conference=None, year=None) -> None:
     """Create an atom feed file (xml format) and store it."""
     print("Generate and save atom feeds.")
     atom_feed = gen_atom_feed(papers)
 
-    if conference and year:
-        file_name = f"{conference}_{year}"
+    if result_file_name:
+        file_name = result_file_name
+    elif conference and year:
+        file_name = f"{conference}_{year}.xml"
     else:
-        file_name = "feed"
+        file_name = "feed.xml"
 
-    with open(f"{config.result_feed_folder}/{file_name}.xml", "w", encoding="utf-8") as f:
+    with open(f"{config.result_feed_folder}/{file_name}", "w", encoding="utf-8") as f:
         f.write(atom_feed)
 

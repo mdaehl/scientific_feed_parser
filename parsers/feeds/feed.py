@@ -18,7 +18,7 @@ class FeedParser:
         self.append = append
         self.online = online
         self.existing_papers = {}
-        self.feed_file_path = f"{config.result_feed_folder}/{filename}.xml"
+        self.feed_file_path = f"{config.result_feed_folder}/{filename}"
 
         config_params = yaml.safe_load(open(config.config_file))
         self.springer_key = config_params.get("springer_api_key")
