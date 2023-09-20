@@ -18,12 +18,12 @@ def gen_entry(paper: Paper) -> str:
         authors_entry += f"<author><name>{author}</name></author>"
 
     return f'<entry> ' \
-           f'<id>{paper.link}</id>' \
+           f'<id>{escape_xml(paper.link)}</id>' \
            f'<title>{escape_xml(paper.title)}</title> ' \
            f'<summary>{escape_xml(paper.abstract)} </summary> ' \
            f'{authors_entry} ' \
-           f'<link href="{paper.link}" rel="alternate" type="text/html"/>  ' \
-           f'<link title="pdf" href="{paper.link}" rel="related" type="application/pdf"/>' \
+           f'<link href="{escape_xml(paper.link)}" rel="alternate" type="text/html"/>  ' \
+           f'<link title="pdf" href="{escape_xml(paper.link)}" rel="related" type="application/pdf"/>' \
            f'</entry>'
 
 
