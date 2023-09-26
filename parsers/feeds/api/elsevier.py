@@ -1,10 +1,14 @@
 import json
 import requests
 from misc import config
+import re
 
 
-def get_data(pii: str, api_key: str) -> tuple[str, list[str], str]:
+def get_data(url: str, api_key: str) -> tuple[str, list[str], str]:
     """Get paper information from elsevier based on the provided link."""
+    match = re.search("pii/(?P<pii>.*?)&", url)
+    pii = match.group("pii")
+
     path = f"https://api.elsevier.com/content/article/pii/{pii}?apiKey={api_key}"
     headers = {"Accept": "application/json"}
 
