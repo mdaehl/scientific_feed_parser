@@ -52,7 +52,7 @@ All created feeds are stored by default in the ```result_feeds``` folder.
 #### Parse Conference (```parse_conference.py```)
 There are two flags ```-c``` for conference and ```-y``` for the desired year. To generate the feed for the CVPR 2023 execute the following:
 ```shell
-parse_conference.py -c CVPR -y 2023
+python parse_conference.py -c CVPR -y 2023
 ```
 
 #### Parse Feed (```parse_feed.py```)
@@ -64,7 +64,7 @@ If you want to parse a single feed file there are 4 important flags:
 
 The following code illustrates the usage with an example:
 ```shell
-parse_conference.py -s gs_feed.xml -t https://parsed_feed.xml -o True -a True
+python parse_conference.py -s gs_feed.xml -t https://parsed_feed.xml -o True -a True
 ```
 This works good for a single feed, but if you have multiple feeds (e.g., to keep the topics separated) it gets laborious.
 Therefore, you can define a constant source to target file mapping in the [config.yaml](misc/config.yaml) file and enable it by setting the flag ```-u``` to ```True```. 
@@ -72,6 +72,16 @@ There is a dummy example in the config as well.
 NOTE: Using the ```-u``` flag runs the script solely based on the config file and all other flags are ignored.
 
 ## Google Scholar confirmation
+### Automatically
+You can use the script ```scholar_auto_activate.py``` to confirm all of your alerts automatically. Simply pass your 
+online feed urls with the flag ```-f``` as shown in following. You can also pass multiple urls at the same time by 
+leaving a space inbetween them.
+
+```shell
+python parse_conference.py -f https://kill-the-newsletter.com/feeds/abcdefg.xml
+```
+
+### Manually
 Open the xml file you received via the kill the newsletter link. 
 In there you should find a substring similar to `http://scholar.google.com/scholar_alerts?update_op=confirm_alert&#x26;amp;hl=en&#x26;amp;email_for_op=6ti0vasfasttads%40kill-the-newsletter.com&#x26;amp;alert_id=Y_NB9sdffrAJ&#x22;`.
 
