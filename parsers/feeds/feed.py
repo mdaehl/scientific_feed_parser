@@ -1,11 +1,11 @@
 import bs4
-import re
 from urllib.parse import urlparse
 
 import requests
 
 from misc.utils import Paper
-from parsers.feeds.api import arxiv, springer, elsevier
+from parsers.feeds.api import arxiv, springer, elsevier, ieee
+from urllib import parse
 import yaml
 from misc import config, utils
 from tqdm import tqdm
@@ -68,13 +68,13 @@ class FeedParser:
             all_authors = list(map(lambda x: x.text.split("-")[0].strip().split(","), authors_str))
 
             for paper_entry, authors in zip(paper_entries, all_authors):
-                url = paper_entry["href"]
+                gs_url = paper_entry["href"]
+                # convert Google Scholar url to general url
+                url = parse.parse_qs(parse.urlparse(gs_url).query)["url"][0]
 
                 if url not in self.existing_papers:
                     title = paper_entry.text
                     abstract = ""
-
-                    url = paper_entry["href"]
 
                     self.current_paper = Paper(title, authors, abstract, url)
                     self.refine_current_paper_info()
@@ -87,9 +87,7 @@ class FeedParser:
     def refine_current_paper_info(self) -> None:
         """Extend the information of the papers as Google Scholar alerts provide only limited info."""
         # the feed links rely on Google Scholar redirect, but we need the source url to get refined information
-        gs_url = self.current_paper.link
-        match = re.search("url=(?P<url>.*)", gs_url)
-        url = match.group("url")
+        url = self.current_paper.link
 
         domain = urlparse(url).netloc
         main_domain = ".".join(domain.split(".")[-2:])
