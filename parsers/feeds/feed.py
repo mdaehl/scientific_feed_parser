@@ -105,7 +105,9 @@ class FeedParser:
             if api_key:
                 title, authors, abstract = elsevier.get_data(url, api_key)
                 self.update_paper_entry(title, authors, abstract)
-        # TODO add ieee (10 calls per sec + 200 calls per day)
+        elif main_domain == "ieee.org":
+            title, authors, abstract = ieee.get_data(url)
+            self.update_paper_entry(title, authors, abstract)
 
     def update_paper_entry(self, title: str, authors: list[str], abstract: str):
         """Update a paper entry."""
