@@ -39,7 +39,9 @@ def activate(args: argparse.Namespace) -> None:
     for file in tqdm(files):
         content = load_file(file)
         link = get_link(content)
-        requests.get(link, proxies=config.proxies, headers=headers)
+        response = requests.get(link, proxies=config.proxies, headers=headers)
+        if response.status_code != 200:
+            raise Warning(f"Google seems to block the automatic activation. You can either try to wait or open the link {link} manually.")
 
 
 if __name__ == "__main__":
