@@ -68,7 +68,13 @@ python parse_conference.py -s gs_feed.xml -t https://parsed_feed.xml -o True -a 
 ```
 This works good for a single feed, but if you have multiple feeds (e.g., to keep the topics separated) it gets laborious.
 Therefore, you can define a constant source to target file mapping in the [config.yaml](misc/config.yaml) file and enable it by setting the flag ```-u``` to ```True```. 
-There is a dummy example in the config as well.
+There is a dummy example in the config as well. 
+
+If you pass multiple feeds, the duplicates across the feeds are removed 
+and the first unique element (based on the feed order in the config) is kept. 
+There might be still duplicates in your feed, if duplicates are found in later parses, because feed viewer usually only 
+update based on new entries and neglecting removed entries. Hence, this is cannot be fixed here.
+
 NOTE: Using the ```-u``` flag runs the script solely based on the config file and all other flags are ignored.
 
 ## Google Scholar confirmation
