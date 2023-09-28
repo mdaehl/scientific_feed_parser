@@ -34,13 +34,14 @@ def remove_duplicates(targets: list[str]) -> None:
         # remove entry if a duplicate is found
         if duplicates:
             for duplicate in duplicates:
-                print(duplicate)
                 duplicate_entry = soup.find("id", string=duplicate).parent
                 duplicate_entry.extract()
 
             # rewrite the affected files
             with open(f"{config.result_feed_folder}/{target}", "w", encoding="utf-8") as f:
-                f.write(soup.text)
+                # get text and remove empty lines from removed entries
+                text = str(soup).replace('\n\n', '\n')
+                f.write(text)
 
 
 def main(args: argparse.Namespace) -> None:
