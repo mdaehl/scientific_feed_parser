@@ -31,6 +31,10 @@ To make things easier, we created the files for the last 5 years of the supporte
 The idea of using elfeed in combination with arxiv was inspired by https://cundy.me/post/elfeed/. 
 Also, https://github.com/CPR-RSS/CPR-RSS.github.io presented the idea of parsing conferences generally into a feed.
 
+To showcase where and when this repository is needed, I illustrate my workflow in the following image.
+<p align="center">
+    <img src="workflow.png" width="50%" height="50%" />
+</p>
 
 ## Install
 The installation was tested on python 3.10. To install the necessary libraries simply run:
@@ -111,4 +115,3 @@ If they are not specified, the requests for extra information are simply skipped
 - elsevier: (https://dev.elsevier.com/)
 - ieee: Support is planned, however, they allow only a limited amount of calls.
 - arxiv:  It is free to use and no specific key is needed. Thank you for arXiv for use of its open access interoperability.
-
