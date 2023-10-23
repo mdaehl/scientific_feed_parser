@@ -5,3 +5,5 @@ tqdm~=4.65.0
 pyyaml~=6.0
 lxml~=4.9.3
 fake-useragent~=1.2.1
+certifi
+numpy~=1.26.0

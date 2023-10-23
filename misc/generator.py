@@ -43,7 +43,6 @@ def gen_atom_feed(papers: list[Paper]) -> str:
 
 def create_atom_feed(papers: list[Paper], result_file_name=None, conference=None, year=None) -> None:
     """Create an atom feed file (xml format) and store it."""
-    print("Generate and save atom feeds.")
     atom_feed = gen_atom_feed(papers)
 
     if result_file_name:

@@ -1,14 +1,24 @@
 import bs4
 from misc import config
-import collections
 import aiohttp
 import requests
 from tqdm.asyncio import tqdm_asyncio
 from datetime import datetime
+from dataclasses import dataclass
+import ssl
+import certifi
 
 
-# paper base class
-Paper = collections.namedtuple("Paper", ["title", "authors", "abstract", "link"])
+@dataclass
+class Paper:
+    title: str
+    authors: list[str]
+    abstract: str
+    link: str
+    domain: str = None
+    html_content: str = None
+    parsed: bool = False
+
 
 base_urls = {
     "CVPR": "https://openaccess.thecvf.com",
@@ -18,6 +28,12 @@ base_urls = {
     "ICML": "https://proceedings.mlr.press",
     "NIPS": "https://papers.nips.cc"
 }
+
+arxiv_domain = "arxiv.org"
+ieee_domain = "ieee.org"
+elsevier_domain = "sciencedirect.com"
+springer_domain = "springer.com"
+nature_domain = "nature.com"
 
 
 def check_year(year: int) -> None:
@@ -31,19 +47,24 @@ def get_link(item: bs4.element.Tag) -> str:
     return item.find("a")["href"]
 
 
-async def fetch_url(session: aiohttp.client.ClientSession, url: str) -> str:
+async def fetch_url(session: aiohttp.client.ClientSession, url: str, header: str | None) -> str:
     """Fetch URL using an aiohttp Session to allow asynchronous execution."""
-    async with session.get(url, proxy=config.http_proxy) as response:
+    async with session.get(url, headers=header, proxy=config.http_proxy) as response:
         return await response.text()
 
 
-async def get_paper_html_content(links: list[str]) -> list[str]:
+async def get_paper_html_content(links: list[str], headers: list[dict] = None) -> list[str]:
     """Get the html content of all links."""
     print("Retrieving paper data.")
 
+    if not headers:
+        headers = len(links) * [None]
+
     # usually this works, but in case the requests fail, check https://stackoverflow.com/questions/51248714/aiohttp-client-exception-serverdisconnectederror-is-this-the-api-servers-issu
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_url(session, url) for url in links]
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    connector = aiohttp.TCPConnector(limit=25, ssl=ssl_context)
+    async with aiohttp.ClientSession(trust_env=True, connector=connector) as session:
+        tasks = [fetch_url(session, url, header) for url, header in zip(links, headers)]
         html_contents = await tqdm_asyncio.gather(*tasks)
         return html_contents
 

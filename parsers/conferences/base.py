@@ -2,7 +2,8 @@ from misc import utils
 
 
 class Parser:
-    def __init__(self, conference: str, year: int):
+    """Base Parser, which is used to parse conferences."""
+    def __init__(self, conference: str, year: int) -> None:
         self.conference = conference
         utils.check_year(year)
         self.year = year
@@ -10,7 +11,8 @@ class Parser:
         self.base_url = utils.base_urls[self.conference]
         self.papers = []
 
-    def get_paper_links(self, containers):
+    def get_paper_links(self, containers) -> list[str]:
+        """Retrieve links from containers."""
         print("Getting paper links.")
         links = list(map(utils.get_link, containers))
         if len(links) == 0:

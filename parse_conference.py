@@ -20,13 +20,14 @@ def main(args: argparse.Namespace) -> None:
         raise ValueError(f"Conference '{conference}' is not or not yet supported.")
 
     papers = paper_parser.get_papers()
+    print("Generate and save atom feeds.")
     generator.create_atom_feed(papers, conference=conference, year=year)
 
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--conference", "-c", help="Supported conferences are: 'CVPR', 'WACV', 'ICCV', 'ECCV' and "
-                                                       "'ICML'.")
+    arg_parser.add_argument("--conference", "-c",
+                            help="Supported conferences are: 'CVPR', 'WACV', 'ICCV', 'ECCV' and 'ICML'.")
     arg_parser.add_argument("--year", "-y", type=int, help="Year of the conference.")
     input_args = arg_parser.parse_args()
     main(input_args)

@@ -9,7 +9,7 @@ import requests
 
 class ECVAParser(base.Parser):
     """Parser for the ECCV which is held by the ECVA."""
-    def __init__(self, conference: str, year: int):
+    def __init__(self, conference: str, year: int) -> None:
         super().__init__(conference, year)
         self.url = self.get_yearly_url()
         self.content = requests.get(self.url, proxies=config.proxies).content.decode("utf-8")

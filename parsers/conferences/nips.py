@@ -10,7 +10,7 @@ import requests
 
 class NIPSParser(base.Parser):
     """Parser for NIPS."""
-    def __init__(self, conference: str, year: int):
+    def __init__(self, conference: str, year: int) -> None:
         super().__init__(conference, year)
         self.url = self.get_yearly_url()
         self.content = requests.get(self.url, proxies=config.proxies).content.decode("utf-8")
