@@ -112,7 +112,8 @@ class ElsevierUrlHandler(UrlHandler):
 class SpringerUrlHandler(UrlHandler):
     """Class to build headers/urls to retrieve springer/nature paper data. Allows to group the requests into unified
     urls to reduce I/O time."""
-    def __init__(self, papers: list[utils.Paper], api_key: str, domain: str, max_request_size: int = 100):
+    def __init__(self, papers: list[utils.Paper], api_key: str, domain: str, max_request_size: int = 1):
+        # TODO check how the paper order can be preserved with multi request, until then request size is set to 1
         super().__init__(papers)
         self.base_url = "https://api.springernature.com/meta/v2/json"
         self.api_key = api_key
