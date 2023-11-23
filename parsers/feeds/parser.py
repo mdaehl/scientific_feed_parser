@@ -69,8 +69,13 @@ class FeedParser:
 
             for paper_entry, authors in zip(paper_entries, all_authors):
                 gs_url = paper_entry["href"]
-                # convert Google Scholar url to general url
-                url = parse.parse_qs(parse.urlparse(gs_url).query)["url"][0]
+
+                # convert Google Scholar url to general url. Sometimes the paper url is not available, then skip it
+                try:
+                    url = parse.parse_qs(parse.urlparse(gs_url).query)["url"][0]
+                except KeyError:
+                    continue
+
                 domain = urlparse(url).netloc
                 core_domain = ".".join(domain.split(".")[-2:])
 
