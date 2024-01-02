@@ -1,3 +1,5 @@
+from __future__ import annotations
+import warnings
 import bs4
 import abc
 import json
@@ -47,16 +49,35 @@ class IEEEContentProcessor(ContentProcessor):
 class ElsevierContentProcessor(ContentProcessor):
     """Process the content related to elsevier/sciencedirect papers."""
     def __init__(self, content: str) -> None:
-        content = json.loads(content)
+        self.api_key = yaml.safe_load(open(config.config_file)).get("elsevier_api_key")
+        if self.api_key:
+            content = json.loads(content)
+        else:
+            content = bs4.BeautifulSoup(content, features="lxml")
         super().__init__(content)
 
     def get_paper_meta_data(self) -> tuple[str, str, list[str]]:
-        data = self.content["full-text-retrieval-response"]["coredata"]
+        if self.api_key:
+            data = self.content["full-text-retrieval-response"]["coredata"]
+            title = data["dc:title"]
+            authors_item = data["dc:creator"]
+            authors = list(map(lambda x: x["$"], authors_item))
+            abstract = data["dc:description"]
+        else:
+            try:
+                abstract = self.content.find("h2", string="Abstract").find_next_sibling().text
+                title = self.content.find("meta", property="og:title")["content"]
+                names = self.content.find_all("span", {"class": "given-name"})
+                surnames = self.content.find_all("span", {"class": "text surname"})
+                authors = [f"{name.text} {surname.text}" for name, surname in zip(names, surnames)]
+            except AttributeError:
+                url = self.content.link["href"]
+                warnings.warn(f"The elsevier paper could not be parsed correctly. This occurs if papers are withdrawn "
+                              f"or have a special format. Consider manually checking the webpage {url}.")
+                title = ""
+                abstract = ""
+                authors = []
 
-        title = data["dc:title"]
-        authors_item = data["dc:creator"]
-        authors = list(map(lambda x: x["$"], authors_item))
-        abstract = data["dc:description"]
         return title, abstract, authors
 
 

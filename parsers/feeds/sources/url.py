@@ -81,31 +81,38 @@ class IEEEUrlHandler(UrlHandler):
 
 class ElsevierUrlHandler(UrlHandler):
     """Class to build headers/urls to retrieve elsevier/sciencedirect paper data."""
-    def __init__(self, papers: list[utils.Paper], api_key: str) -> None:
+    def __init__(self, papers: list[utils.Paper], api_key: str = None) -> None:
         super().__init__(papers)
         self.base_url = "https://api.elsevier.com/content/article/pii"
         self.api_key = api_key
 
     @classmethod
     def create_handler(cls, papers: list[utils.Paper], **kwargs) -> ElsevierUrlHandler | None:
-        api_key = yaml.safe_load(open(config.config_file))["elsevier_api_key"]
+        api_key = yaml.safe_load(open(config.config_file)).get("elsevier_api_key")
         if api_key:
             return cls(papers, api_key)
         else:
-            return None
+            return cls(papers)
 
     def get_request_urls(self) -> list[str]:
-        urls = []
-        for paper in self.papers:
-            paper_link = paper.link
-            match = re.search("pii/(?P<pii>.*)", paper_link)
-            pii = match.group("pii")
-            urls.append(f"{self.base_url}/{pii}?apiKey={self.api_key}")
+        if self.api_key:
+            urls = []
+            for paper in self.papers:
+                paper_link = paper.link
+                match = re.search("pii/(?P<pii>.*)", paper_link)
+                pii = match.group("pii")
+                urls.append(f"{self.base_url}/{pii}?apiKey={self.api_key}")
+        else:
+            urls = [paper.link for paper in self.papers]
 
         return urls
 
     def get_request_headers(self) -> list[dict]:
-        headers = {"Accept": "application/json"}
+        if self.api_key:
+            headers = {"Accept": "application/json"}
+        else:
+            user_agent = UserAgent()
+            headers = {"User-Agent": user_agent.firefox}
         return len(self.papers) * [headers]
 
 
