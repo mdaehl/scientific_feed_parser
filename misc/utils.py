@@ -63,8 +63,11 @@ async def get_paper_html_content(links: list[str], headers: list[dict] = None) -
         headers = len(links) * [None]
 
     # usually this works, but in case the requests fail, check https://stackoverflow.com/questions/51248714/aiohttp-client-exception-serverdisconnectederror-is-this-the-api-servers-issu
-    ssl_context = ssl.create_default_context(cafile=certifi.where())
-    connector = aiohttp.TCPConnector(limit=request_limit, ssl=ssl_context)
+    if config.verify_ssl:
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+    else:
+        ssl_context = None
+    connector = aiohttp.TCPConnector(limit=request_limit, ssl=ssl_context, verify_ssl=config.verify_ssl)
     async with aiohttp.ClientSession(trust_env=True, connector=connector) as session:
         tasks = [fetch_url(session, url, header) for url, header in zip(links, headers)]
         html_contents = await tqdm_asyncio.gather(*tasks)
