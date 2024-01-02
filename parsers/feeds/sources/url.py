@@ -136,13 +136,14 @@ class SpringerUrlHandler(UrlHandler):
         dois = []
         for paper in self.papers:
             paper_link = paper.link
+            sub_doi = paper_link.split("/")[-1]
+            sub_doi = sub_doi.split(".")[0]  # free articles have a ".pdf" at the end
             if self.domain == "nature.com":
-                nature_doi_preface = "10.1038"
-                sub_doi = paper_link.split("/")[-1]
-                doi = f"{nature_doi_preface}/{sub_doi}"
+                doi_preface = "10.1038"
             else:
-                doi = "/".join(paper_link.split("/")[-2:])
+                doi_preface = paper_link.split("/")[-2]
 
+            doi = f"{doi_preface}/{sub_doi}"
             dois.append(doi)
 
         dois = list(map(lambda x: f"doi:{x}", dois))
