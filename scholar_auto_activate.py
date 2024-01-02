@@ -9,7 +9,7 @@ from fake_useragent import UserAgent
 def load_file(file_path: str) -> str:
     """Load feed file and get it's content."""
     try:
-        content = requests.get(file_path, proxies=config.proxies).content.decode("utf-8")
+        content = requests.get(file_path, proxies=config.proxies, verify=config.verify_ssl).content.decode("utf-8")
     except requests.exceptions.InvalidSchema:
         raise ValueError(f"{file_path} is no valid URL.")
     return content
@@ -39,7 +39,7 @@ def activate(args: argparse.Namespace) -> None:
     for file in tqdm(files):
         content = load_file(file)
         link = get_link(content)
-        response = requests.get(link, proxies=config.proxies, headers=headers)
+        response = requests.get(link, proxies=config.proxies, headers=headers, verify=config.verify_ssl)
         if response.status_code != 200:
             raise Warning(f"Google seems to block the automatic activation. You can either try to wait or open the link {link} manually.")
 

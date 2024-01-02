@@ -51,7 +51,7 @@ def get_link(item: bs4.element.Tag) -> str:
 
 async def fetch_url(session: aiohttp.client.ClientSession, url: str, header: str | None) -> str:
     """Fetch URL using an aiohttp Session to allow asynchronous execution."""
-    async with session.get(url, headers=header, proxy=config.http_proxy) as response:
+    async with session.get(url, headers=header, proxy=config.proxies) as response:
         return await response.text()
 
 
@@ -73,7 +73,7 @@ async def get_paper_html_content(links: list[str], headers: list[dict] = None) -
 
 def get_soup(url: str) -> bs4.BeautifulSoup:
     """Compact class to retrieve url and pass it into bs4."""
-    content = requests.get(url, proxies=config.proxies).content.decode("utf-8")
+    content = requests.get(url, proxies=config.proxies, verify=config.verify_ssl).content.decode("utf-8")
     soup = bs4.BeautifulSoup(content, parser="html.parser", features="lxml")
     return soup
 

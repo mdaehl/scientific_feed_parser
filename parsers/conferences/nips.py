@@ -1,7 +1,6 @@
 from parsers.conferences import base
 import bs4
 from misc import utils
-import asyncio
 from tqdm import tqdm
 from misc.utils import Paper
 from misc import config
@@ -13,7 +12,7 @@ class NIPSParser(base.Parser):
     def __init__(self, conference: str, year: int) -> None:
         super().__init__(conference, year)
         self.url = self.get_yearly_url()
-        self.content = requests.get(self.url, proxies=config.proxies).content.decode("utf-8")
+        self.content = requests.get(self.url, proxies=config.proxies, verify=config.verify_ssl).content.decode("utf-8")
 
     def get_yearly_url(self) -> str:
         """Get the conference url of the desired year."""
@@ -40,7 +39,7 @@ class NIPSParser(base.Parser):
 
         html_contents = []
         for link in tqdm(self.links):
-            content = requests.get(link, proxies=config.proxies).content.decode("utf-8")
+            content = requests.get(link, proxies=config.proxies, verify=config.verify_ssl).content.decode("utf-8")
             html_contents.append(content)
 
         print("Processing paper data.")

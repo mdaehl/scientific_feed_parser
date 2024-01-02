@@ -10,11 +10,14 @@ def main(args: argparse.Namespace) -> None:
     remove_duplicates = args.remove_duplicates
 
     if use_config:
-        configs = yaml.safe_load(open(config.config_file))["pairings"]
-        sources = list(map(lambda x: x.get("source"), configs))
-        targets = list(map(lambda x: x.get("target"), configs))
-        onlines = list(map(lambda x: x.get("online"), configs))
-        appendings = list(map(lambda x: x.get("append"), configs))
+        configs = yaml.safe_load(open(config.config_file)).get("pairings")
+        if configs:
+            sources = list(map(lambda x: x.get("source"), configs))
+            targets = list(map(lambda x: x.get("target"), configs))
+            onlines = list(map(lambda x: x.get("online"), configs))
+            appendings = list(map(lambda x: x.get("append"), configs))
+        else:
+            raise Warning("No pairings found in the config file.")
     else:
         sources = list(args.source)
         targets = list(args.target)

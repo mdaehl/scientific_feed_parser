@@ -12,7 +12,7 @@ class ECVAParser(base.Parser):
     def __init__(self, conference: str, year: int) -> None:
         super().__init__(conference, year)
         self.url = self.get_yearly_url()
-        self.content = requests.get(self.url, proxies=config.proxies).content.decode("utf-8")
+        self.content = requests.get(self.url, proxies=config.proxies, verify=config.verify_ssl).content.decode("utf-8")
 
     def get_yearly_url(self) -> str:
         """Get the conference url of the desired year."""
