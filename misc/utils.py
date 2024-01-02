@@ -35,6 +35,8 @@ elsevier_domain = "sciencedirect.com"
 springer_domain = "springer.com"
 nature_domain = "nature.com"
 
+request_limit = 25  # number of simultaneously opened connections
+
 
 def check_year(year: int) -> None:
     """Guarantee that years that are in the future are not allowed."""
@@ -62,7 +64,7 @@ async def get_paper_html_content(links: list[str], headers: list[dict] = None) -
 
     # usually this works, but in case the requests fail, check https://stackoverflow.com/questions/51248714/aiohttp-client-exception-serverdisconnectederror-is-this-the-api-servers-issu
     ssl_context = ssl.create_default_context(cafile=certifi.where())
-    connector = aiohttp.TCPConnector(limit=25, ssl=ssl_context)
+    connector = aiohttp.TCPConnector(limit=request_limit, ssl=ssl_context)
     async with aiohttp.ClientSession(trust_env=True, connector=connector) as session:
         tasks = [fetch_url(session, url, header) for url, header in zip(links, headers)]
         html_contents = await tqdm_asyncio.gather(*tasks)

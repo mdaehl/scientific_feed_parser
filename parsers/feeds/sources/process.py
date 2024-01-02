@@ -4,6 +4,8 @@ import bs4
 import abc
 import json
 from typing import Any
+import yaml
+from misc import config
 
 
 class ContentProcessor(abc.ABC):
@@ -39,6 +41,11 @@ class IEEEContentProcessor(ContentProcessor):
         super().__init__(content)
 
     def get_paper_meta_data(self) -> tuple[str, str, list[str]]:
+        if self.content.title.text == "Request Rejected":
+            raise ValueError("The request to the IEEE API was rejected. This usually occurs after a large amount of "
+                             "requests. However, connecting and disconnection from a WIFI/Lan connection seems to fix "
+                             "this problem. If this problem persists or occurs frequently, please consider using "
+                             "reducing the number of simultaneously opened connections in utils.py.")
         title = self.content.find("meta", property="og:title")["content"]
         abstract = self.content.find("meta", property="og:description")["content"]
         authors = self.content.find("meta", attrs={"name": "parsely-author"})["content"]
@@ -58,6 +65,12 @@ class ElsevierContentProcessor(ContentProcessor):
 
     def get_paper_meta_data(self) -> tuple[str, str, list[str]]:
         if self.api_key:
+            if self.content.get("error-response") is not None:
+                raise ValueError(
+                    "The request to the Elsevier API was rejected. This usually occurs after a large amount "
+                    "of requests. If this problem persists or occurs frequently, please consider using reducing the "
+                    "number of simultaneously opened connections in utils.py.")
+
             data = self.content["full-text-retrieval-response"]["coredata"]
             title = data["dc:title"]
             authors_item = data["dc:creator"]

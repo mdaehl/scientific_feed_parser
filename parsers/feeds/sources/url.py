@@ -130,7 +130,7 @@ class SpringerUrlHandler(UrlHandler):
     @classmethod
     def create_handler(cls, papers: list[utils.Paper], **kwargs) -> SpringerUrlHandler | None:
         domain = kwargs["domain"]
-        api_key = yaml.safe_load(open(config.config_file))["springer_api_key"]
+        api_key = yaml.safe_load(open(config.config_file)).get("springer_api_key")
         if api_key:
             return cls(papers, api_key, domain)
         else:
