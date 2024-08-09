@@ -82,7 +82,13 @@ class HTMLContentRetriever:
                 split_content = content.find_all("entry")
                 split_contents += map(str, split_content)
             elif domain in [utils.springer_domain, utils.nature_domain]:
-                split_contents += map(lambda x: json.dumps(x), json.loads(content)["records"])
+                # TODO revisit if the multiple papers in one request are handled correctly
+                json_content = json.loads(content)["records"]
+                # check if the content is empty
+                if len(json_content) == 0:
+                    split_contents += [None]
+                else:
+                    split_contents += map(lambda x: json.dumps(x), json.loads(content)["records"])
             else:
                 split_contents.append(content)
 
