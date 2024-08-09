@@ -53,6 +53,10 @@ class Feed:
                 content_processor = None
                 domain = paper.domain
                 content = paper.html_content
+
+                if content is None:
+                    continue
+
                 if domain == utils.arxiv_domain:
                     content_processor = process.ArxivContentProcessor(content)
                 elif domain == utils.ieee_domain:
