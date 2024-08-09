@@ -30,6 +30,7 @@ def main(args: argparse.Namespace) -> None:
         feed_list.remove_duplicates()
     feed_list.refine_feeds()
     feed_list.save_feeds()
+    feed_list.print_update_stats()
 
 
 if __name__ == "__main__":

@@ -15,6 +15,26 @@ class Feed:
         self.feed_parser = self.init_feedparser()
         self.papers = []
 
+    @property
+    def n_papers(self) -> int:
+        """Return the current number of papers in the feed."""
+        return len(self.papers)
+
+    @property
+    def n_init_papers(self) -> int:
+        """Return the number of papers in the feed."""
+        return self.feed_parser.get_n_existing_papers()
+
+    @property
+    def n_new_papers(self) -> int:
+        """Return the number of new papers in the feed."""
+        return len([paper for paper in self.papers if not paper.parsed])
+
+    @property
+    def n_removed_papers(self) -> int:
+        """Return the number of removed papers in the feed."""
+        return self.n_new_papers - (self.n_papers - self.n_init_papers)
+
     def init_feedparser(self) -> parser.FeedParser:
         """Initialize the feed parser which processes the source file."""
         if not self.online and not os.path.isfile(self.source):
@@ -108,6 +128,11 @@ class FeedList:
         """Retrieve the html content for the papers (if the publisher is supported) of all feeds in the feed list."""
         self.content_retriever = html.HTMLContentRetriever(self.feeds)
         self.content_retriever.get_content()
+
+    def print_update_stats(self) -> None:
+        print("Update statistics:")
+        for feed in tqdm(self.feeds, total=len(self.feeds)):
+            print(f"{feed.target}: {feed.n_new_papers} new papers and {feed.n_removed_papers} papers removed.")
 
     def save_feeds(self) -> None:
         """Save the papers of each feed in the feed list."""

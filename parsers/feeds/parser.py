@@ -26,7 +26,13 @@ class FeedParser:
         self.soup_content = self.load_content()
 
         self.papers = []
-        self.current_paper = None
+        self.data_loaded = False
+
+    def get_n_existing_papers(self) -> int:
+        """Return the number of existing papers."""
+        if not self.data_loaded and self.appending:
+            self.load_existing_items()
+        return len(self.existing_papers)
 
     def load_content(self) -> bs4.BeautifulSoup:
         """Load the existing xml file of Google Scholar alert."""
@@ -51,10 +57,13 @@ class FeedParser:
             self.existing_papers = {link: Paper(title, authors, abstract, link, parsed=True) for
                                     title, authors, abstract, link in zip(titles, all_authors, abstracts, links)}
 
+        self.data_loaded = True
+
     def get_papers(self) -> list[Paper]:
         """Retrieve the data of all papers found in the xml file."""
         if self.appending:
             self.load_existing_items()
+            self.papers = list(self.existing_papers.values())
 
         print("Getting data from entries.")
         entries = self.soup_content.find_all("entry")
@@ -79,19 +88,15 @@ class FeedParser:
                 domain = urlparse(url).netloc
                 core_domain = ".".join(domain.split(".")[-2:])
 
-                if url in self.existing_papers:  # check if already exists in old file
-                    paper = self.existing_papers[url]
-                    paper.domain = core_domain
-                    self.papers.append(paper)
-
-                elif url in already_parsed_papers:  # check if already parsed
+                # check if already exists in old file or if already parsed
+                if url in self.existing_papers or url in already_parsed_papers:
                     continue
                 else:
                     title = paper_entry.text
                     abstract = ""
 
-                    self.current_paper = Paper(title, authors, abstract, url, core_domain)
-                    self.papers.append(self.current_paper)
+                    current_paper = Paper(title, authors, abstract, url, core_domain)
+                    self.papers.append(current_paper)
                     already_parsed_papers.add(url)
 
         return self.papers
